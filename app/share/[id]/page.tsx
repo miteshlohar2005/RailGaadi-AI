@@ -1,0 +1,74 @@
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { useLiveJourney } from '@/hooks/useLiveJourney';
+import { JourneyCard } from '@/components/journey/JourneyCard';
+import { Timeline } from '@/components/journey/Timeline';
+import { Skeleton } from '@/components/ui/Skeleton';
+import dynamic from 'next/dynamic';
+
+const MapView = dynamic(() => import('@/features/maps/MapView'), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[400px] w-full rounded-3xl" />,
+});
+
+export default function ShareJourneyPage({ params }: { params: { id: string } }) {
+  const { data: journey, isLoading, isError } = useLiveJourney(params.id);
+
+  if (isLoading) {
+    return (
+      <div className="py-8 space-y-6 pt-20">
+        <Skeleton className="h-64 w-full rounded-3xl" />
+        <Skeleton className="h-[400px] w-full rounded-3xl" />
+      </div>
+    );
+  }
+
+  if (isError || !journey) {
+    return (
+      <div className="py-12 max-w-xl mx-auto space-y-4 pt-20">
+        <div className="glass-card rounded-3xl p-8 text-center space-y-4">
+          <h2 className="text-xl font-extrabold text-foreground">Train Not Found</h2>
+          <p className="text-sm text-muted-foreground">
+            Could not load the shared journey. The train may no longer be active or the link is invalid.
+          </p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 rounded-xl bg-rail-blue px-4 py-2 text-xs font-semibold text-white shadow-glow hover:bg-sky-600 transition-colors"
+          >
+            Search Trains
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 pt-20">
+      <div className="glass-card flex items-center justify-between rounded-2xl px-6 py-3 border border-rail-blue/20">
+        <div className="flex items-center gap-2 text-xs font-semibold text-rail-blue">
+          <span className="h-2 w-2 rounded-full bg-rail-blue animate-pulse" />
+          <span>Public Shared Live Journey Stream</span>
+        </div>
+        <Link
+          href="/"
+          className="text-xs font-bold text-foreground hover:text-rail-blue transition-colors"
+        >
+          Track another train
+        </Link>
+      </div>
+
+      <JourneyCard journey={journey} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-7">
+          <MapView journey={journey} className="h-[420px] w-full" />
+        </div>
+        <div className="lg:col-span-5">
+          <Timeline stations={journey.stations} />
+        </div>
+      </div>
+    </div>
+  );
+}
