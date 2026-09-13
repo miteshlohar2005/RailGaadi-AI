@@ -1,12 +1,17 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Poppins, JetBrains_Mono } from 'next/font/google';
 import '@/styles/globals.css';
 import QueryProvider from '@/providers/query-provider';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { Navbar } from '@/components/layout/Navbar';
 import { BottomNav } from '@/components/layout/BottomNav';
 
-const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' });
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800'],
+  display: 'swap',
+  variable: '--font-poppins',
+});
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', variable: '--font-mono' });
 
 export const metadata: Metadata = {
@@ -41,7 +46,7 @@ const FOUC_SCRIPT = `(function(){try{var t=localStorage.getItem('railgaadi-theme
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} h-full`} suppressHydrationWarning>
+    <html lang="en" className={`${poppins.variable} ${jetbrainsMono.variable} h-full`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: FOUC_SCRIPT }} />
         <link rel="preconnect" href="https://api.railradar.in" />
@@ -49,7 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://api.openweathermap.org" />
       </head>
       <body
-        className={`${inter.className} min-h-full flex flex-col`}
+        className={`${poppins.className} min-h-full flex flex-col`}
       >
         <ThemeProvider>
           <QueryProvider>

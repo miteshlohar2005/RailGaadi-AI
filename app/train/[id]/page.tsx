@@ -217,6 +217,11 @@ export default function TrainJourneyPage({ params }: { params: { id: string } })
           <Timeline
             stations={journey.stations}
             currentStationCode={journey.currentStation?.code}
+            positionState={journey.positionState}
+            previousStationName={journey.previousStation?.name}
+            nextStationName={journey.nextStation?.name}
+            freshnessLevel={journey.freshness.freshnessLevel}
+            dataAgeSeconds={journey.freshness.dataAgeSeconds}
           />
         </div>
       </div>

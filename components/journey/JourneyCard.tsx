@@ -82,11 +82,21 @@ export function JourneyCard({
             </div>
             <div>
               <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Current Station
+                {journey.positionState === 'BETWEEN_STATIONS'
+                  ? 'Between Stations'
+                  : journey.positionState === 'PASSED_STATION'
+                  ? 'Near Destination'
+                  : 'Current Station'}
               </span>
-              <p className="mt-1 font-bold text-foreground text-sm">
-                {journey.currentStation?.name || journey.previousStation?.name || 'In Transit'}
-              </p>
+              {journey.positionState === 'BETWEEN_STATIONS' && journey.previousStation && journey.nextStation ? (
+                <p className="mt-1 font-bold text-foreground text-sm">
+                  {journey.previousStation.name} → {journey.nextStation.name}
+                </p>
+              ) : (
+                <p className="mt-1 font-bold text-foreground text-sm">
+                  {journey.currentStation?.name || journey.previousStation?.name || 'In Transit'}
+                </p>
+              )}
               {journey.currentStation?.platform && (
                 <span className="mt-1 inline-block rounded-md bg-secondary px-1.5 py-0.5 font-mono text-[10px] font-semibold text-muted-foreground">
                   Platform {journey.currentStation.platform}
@@ -106,13 +116,17 @@ export function JourneyCard({
               <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Live Speed
               </span>
-              <div className="mt-1 flex items-baseline gap-1">
-                <AnimatedCounter
-                  value={journey.speedKmh}
-                  className="text-xl text-foreground"
-                />
-                <span className="text-xs font-semibold text-muted-foreground">km/h</span>
-              </div>
+              {journey.freshness?.speedAvailable ? (
+                <div className="mt-1 flex items-baseline gap-1">
+                  <AnimatedCounter
+                    value={journey.speedKmh}
+                    className="text-xl text-foreground"
+                  />
+                  <span className="text-xs font-semibold text-muted-foreground">km/h</span>
+                </div>
+              ) : (
+                <p className="mt-1 text-sm font-medium text-muted-foreground italic">Not available</p>
+              )}
             </div>
           </div>
         </div>

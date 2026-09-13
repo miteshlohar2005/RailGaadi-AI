@@ -15,6 +15,14 @@ export const env = {
   // Upstash Redis (Phase 2)
   UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL || '',
   UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN || '',
+
+  // Support / Contact form email (server-side only)
+  CONTACT_EMAIL_TO: process.env.CONTACT_EMAIL_TO || 'miteshlohar1966@gmail.com',
+  SMTP_HOST: process.env.SMTP_HOST || '',
+  SMTP_PORT: Number(process.env.SMTP_PORT || 587),
+  SMTP_SECURE: process.env.SMTP_SECURE === 'true',
+  SMTP_USER: process.env.SMTP_USER || '',
+  SMTP_PASS: process.env.SMTP_PASS || '',
 };
 
 // Client-safe config — only include NEXT_PUBLIC_ variables here

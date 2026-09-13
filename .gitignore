@@ -43,3 +43,4 @@ dev-server.log
 
 # Generated output
 page-output.html
+dev-server.err.log

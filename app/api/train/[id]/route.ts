@@ -44,6 +44,22 @@ export async function GET(
       );
     }
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[API /train/${trainId}] freshness:`, {
+        freshnessLevel: journey.freshness.freshnessLevel,
+        dataAgeSeconds: journey.freshness.dataAgeSeconds,
+        positionSource: journey.freshness.positionSource,
+        isLive: journey.freshness.isLive,
+        speedKmh: journey.speedKmh,
+        speedAvailable: journey.freshness.speedAvailable,
+        lastUpdated: journey.lastUpdated,
+        positionState: journey.positionState,
+        currentStation: journey.currentStation?.name,
+        nextStation: journey.nextStation?.name,
+        apiProvidedStationCode: journey.freshness.trackingMode,
+      });
+    }
+
     setCached(cacheKey, journey, 30); // 30 sec cache for live tracking
 
     return NextResponse.json<ApiResponse<LiveJourney>>({

@@ -60,11 +60,32 @@ export interface LiveJourney {
   remainingDistanceKm: number;
   totalDistanceKm: number;
   completionPercentage: number;
-  lastUpdated: string; // ISO timestamp
+  lastUpdated: string; // ISO timestamp — when position was last observed by upstream API
   previousStation?: Station;
   currentStation?: Station;
   nextStation?: Station;
   ETA: string;
   stations: Station[];
   routeGeometry?: [number, number][]; // Array of [lng, lat] for MapLibre polyline
+  /** Whether the train is at a station, between stations, or position unknown */
+  positionState?: 'AT_STATION' | 'BETWEEN_STATIONS' | 'PASSED_STATION' | 'UNKNOWN';
+  /** Freshness metadata */
+  freshness: {
+    /** Whether the upstream API reports this as live tracking */
+    isLive: boolean;
+    /** Whether the coordinates come from actual GPS (vs station-based or interpolated) */
+    isActualPosition: boolean;
+    /** How the position was determined: 'gps' | 'station' | 'interpolated' | 'fallback' */
+    positionSource: 'gps' | 'station' | 'interpolated' | 'fallback';
+    /** Seconds since the upstream API last updated the position */
+    dataAgeSeconds: number;
+    /** Freshness label: 'live' | 'recent' | 'stale' | 'outdated' | 'unknown' */
+    freshnessLevel: 'live' | 'recent' | 'stale' | 'outdated' | 'unknown';
+    /** Speed from API if available, otherwise null */
+    speedAvailable: boolean;
+    /** Heading calculated from position delta, or null if unavailable */
+    headingAvailable: boolean;
+    /** The raw trackingMode string from the API */
+    trackingMode: string;
+  };
 }

@@ -2,102 +2,161 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle, Route, Cloud, Mountain, Lightbulb, Lock } from 'lucide-react';
-import { GlassCard } from '@/components/ui/GlassCard';
+import { AlertTriangle, Route, CloudRain, Lightbulb, ArrowRight, Cpu } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { cn } from '@/utils/cn';
 
-const intelligenceFeatures = [
+interface Capability {
+  index: string;
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  status: 'soon' | 'live';
+}
+
+const CAPABILITIES: Capability[] = [
   {
+    index: '01',
     icon: AlertTriangle,
     title: 'Delay Prediction',
     description: 'Historical delay pattern analysis for smarter journey planning.',
-    status: 'Coming Soon' as const,
-    color: 'text-amber-400',
-    bg: 'from-amber-500/15 to-orange-600/10',
+    status: 'soon',
   },
   {
+    index: '02',
     icon: Route,
     title: 'Route Intelligence',
     description: 'Optimal route recommendations based on real-time network conditions.',
-    status: 'Coming Soon' as const,
-    color: 'text-rail-blue',
-    bg: 'from-rail-blue/15 to-rail-cyan/10',
+    status: 'soon',
   },
   {
-    icon: Cloud,
+    index: '03',
+    icon: CloudRain,
     title: 'Weather Risk',
     description: 'Weather impact assessment on train schedules and route conditions.',
-    status: 'Active' as const,
-    color: 'text-emerald-400',
-    bg: 'from-emerald-500/15 to-teal-600/10',
+    status: 'live',
   },
   {
-    icon: Mountain,
-    title: 'Terrain Analysis',
-    description: 'Elevation profiling and terrain feature detection along routes.',
-    status: 'Active' as const,
-    color: 'text-emerald-400',
-    bg: 'from-emerald-500/15 to-teal-600/10',
-  },
-  {
+    index: '04',
     icon: Lightbulb,
     title: 'Journey Insights',
-    description: 'Smart recommendations for optimal travel windows and connections.',
-    status: 'Coming Soon' as const,
-    color: 'text-rail-cyan',
-    bg: 'from-rail-cyan/15 to-blue-600/10',
+    description: 'Smart recommendations for optimal travel planning.',
+    status: 'soon',
   },
 ];
 
+const DATA_SOURCES = ['RailRadar', 'OpenWeather', 'OpenTopography', 'Overpass API'];
+
+function StatusBadge({ status }: { status: 'soon' | 'live' }) {
+  return status === 'live' ? (
+    <span className="flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-emerald-400">
+      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 live-dot" />
+      Live
+    </span>
+  ) : (
+    <span className="rounded-full border border-sky-300/25 bg-sky-300/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-sky-300">
+      Soon
+    </span>
+  );
+}
+
 export function IntelligenceSection() {
   return (
-    <section className="py-24 px-4 sm:px-6 relative">
-      {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] radial-glow opacity-50" />
+    <section id="intelligence" className="scroll-mt-16 relative overflow-hidden bg-rail-navy">
+      {/* Subtle control-room grid */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.35]"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)',
+          backgroundSize: '72px 72px',
+        }}
+      />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-56 w-[720px] -translate-x-1/2 rounded-full bg-rail-blue/10 blur-3xl" />
 
-      <div className="mx-auto max-w-6xl relative z-10">
+      <div className="relative mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-24 lg:py-28">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.55 }}
+          className="mx-auto max-w-2xl text-center"
         >
-          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-rail-cyan mb-4 block">Intelligence</span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-4">
-            RailGaadi <span className="gradient-text">Intelligence</span>
+          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-rail-bright">
+            Intelligence Layer
+          </span>
+          <h2 className="mt-4 text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-[42px] lg:text-[46px]">
+            RailGaadi Intelligence
           </h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">
-            AI-powered insights built on top of real-time railway data, weather, and terrain analysis.
+          <p className="mt-4 text-base leading-relaxed text-sky-200/80 sm:text-lg">
+            AI-powered insights built on top of real-time railway data, weather and terrain
+            analysis.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {intelligenceFeatures.map((feature, i) => (
+        {/* Capabilities index */}
+        <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-x-12 md:grid-cols-2">
+          {CAPABILITIES.map((cap, i) => (
             <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
+              key={cap.title}
+              initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.4, delay: i * 0.08 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.5, delay: i * 0.06, ease: 'easeOut' }}
+              className={cn(
+                'group border-b border-white/10 py-7 transition-colors duration-300',
+                'hover:border-rail-bright/50'
+              )}
             >
-              <GlassCard className="h-full relative overflow-hidden">
-                <div className={`h-11 w-11 rounded-xl flex items-center justify-center bg-gradient-to-br ${feature.bg} mb-4`}>
-                  <feature.icon className={`h-5 w-5 ${feature.color}`} />
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-mono text-xs font-bold tracking-[0.2em] text-sky-300/60">
+                  {cap.index}
+                </span>
+                <StatusBadge status={cap.status} />
+              </div>
+              <div className="mt-3 flex items-start gap-4">
+                <span className="mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-rail-bright">
+                  <cap.icon className="h-5 w-5" strokeWidth={1.8} />
+                </span>
+                <div>
+                  <h3 className="text-lg font-bold text-white">{cap.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-sky-200/70">
+                    {cap.description}
+                  </p>
                 </div>
-                <div className="flex items-center gap-2 mb-2">
-                  <h3 className="text-base font-bold text-foreground">{feature.title}</h3>
-                  {feature.status === 'Coming Soon' && (
-                    <span className="flex items-center gap-1 rounded-full bg-secondary border border-border px-2 py-0.5 text-[9px] font-bold text-muted-foreground uppercase">
-                      <Lock className="h-2.5 w-2.5" />
-                      Soon
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
-              </GlassCard>
+              </div>
             </motion.div>
           ))}
         </div>
+
+        {/* Data pipeline strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="mx-auto mt-12 flex max-w-4xl flex-col items-center gap-4 rounded-xl border border-white/10 bg-white/[0.03] px-6 py-5 sm:flex-row sm:justify-between"
+        >
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <span className="mr-1 text-[11px] font-semibold uppercase tracking-widest text-sky-300/60">
+              Built on
+            </span>
+            {DATA_SOURCES.map((s) => (
+              <span
+                key={s}
+                className="rounded-md border border-white/10 bg-white/[0.05] px-2.5 py-1 text-[11px] font-semibold text-sky-100/90"
+              >
+                {s}
+              </span>
+            ))}
+          </div>
+          <span className="flex shrink-0 items-center gap-2 text-[12px] font-bold text-rail-bright">
+            <Cpu className="h-4 w-4" strokeWidth={1.8} />
+            RailGaadi AI layer
+            <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.2} />
+          </span>
+        </motion.div>
       </div>
     </section>
   );

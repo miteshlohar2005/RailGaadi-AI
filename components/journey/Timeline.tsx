@@ -9,10 +9,15 @@ import { cn } from '@/utils/cn';
 interface TimelineProps {
   stations: Station[];
   currentStationCode?: string;
+  positionState?: 'AT_STATION' | 'BETWEEN_STATIONS' | 'PASSED_STATION' | 'UNKNOWN';
+  previousStationName?: string;
+  nextStationName?: string;
+  freshnessLevel?: 'live' | 'recent' | 'stale' | 'outdated' | 'unknown';
+  dataAgeSeconds?: number;
   className?: string;
 }
 
-export function Timeline({ stations, currentStationCode, className }: TimelineProps) {
+export function Timeline({ stations, currentStationCode, positionState, previousStationName, nextStationName, freshnessLevel, dataAgeSeconds, className }: TimelineProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const currentStationRef = useRef<HTMLDivElement>(null);
@@ -47,12 +52,49 @@ export function Timeline({ stations, currentStationCode, className }: TimelinePr
       {/* Sticky Header */}
       <div className="flex-shrink-0 p-5 pb-3 space-y-3 border-b border-border/50">
         <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-rail-blue animate-pulse" />
+          <span className={cn(
+            'h-2 w-2 rounded-full animate-pulse',
+            freshnessLevel === 'live' ? 'bg-emerald-500' :
+            freshnessLevel === 'recent' ? 'bg-amber-500' :
+            freshnessLevel === 'stale' ? 'bg-orange-500' :
+            freshnessLevel === 'outdated' ? 'bg-red-500' : 'bg-rail-blue'
+          )} />
           Station Route Timeline
           <span className="ml-auto text-[11px] font-medium text-muted-foreground">
             {filteredStations.length}/{stations.length}
           </span>
         </h3>
+
+        {/* Position context */}
+        {positionState && positionState !== 'UNKNOWN' && (
+          <div className={cn(
+            'rounded-xl border px-3 py-2 text-[11px] font-medium',
+            positionState === 'AT_STATION' && 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400',
+            positionState === 'BETWEEN_STATIONS' && 'bg-rail-blue/10 border-rail-blue/20 text-rail-blue',
+            positionState === 'PASSED_STATION' && 'bg-muted/50 border-border text-muted-foreground',
+          )}>
+            {positionState === 'AT_STATION' && (
+              <span>At <strong>{currentStationCode ? stations.find(s => s.code === currentStationCode)?.name : 'station'}</strong></span>
+            )}
+            {positionState === 'BETWEEN_STATIONS' && (
+              <span>Between <strong>{previousStationName}</strong> → <strong>{nextStationName}</strong></span>
+            )}
+            {positionState === 'PASSED_STATION' && (
+              <span>Journey near completion — passed all scheduled stops</span>
+            )}
+            {dataAgeSeconds !== undefined && dataAgeSeconds > 60 && (
+              <span className="ml-1 text-muted-foreground">· {dataAgeSeconds >= 60 ? `${Math.floor(dataAgeSeconds / 60)}m ${dataAgeSeconds % 60}s ago` : `${dataAgeSeconds}s ago`}</span>
+            )}
+          </div>
+        )}
+        {positionState === 'UNKNOWN' && dataAgeSeconds !== undefined && (
+          <div className="rounded-xl border bg-red-500/10 border-red-500/20 px-3 py-2 text-[11px] font-medium text-red-600 dark:text-red-400">
+            Position unavailable — showing last known
+            {dataAgeSeconds >= 60 && (
+              <span className="ml-1 text-muted-foreground">· {Math.floor(dataAgeSeconds / 60)}m {dataAgeSeconds % 60}s ago</span>
+            )}
+          </div>
+        )}
 
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
@@ -154,9 +196,14 @@ export function Timeline({ stations, currentStationCode, className }: TimelinePr
                           {st.name} ({st.code})
                         </h4>
 
-                        {isCurrent && (
+                        {isCurrent && positionState === 'AT_STATION' && (
                           <span className="rounded-md bg-rail-blue/10 border border-rail-blue/20 px-2 py-0.5 font-mono text-[9px] font-bold text-rail-blue uppercase tracking-wider">
                             Live
+                          </span>
+                        )}
+                        {isCurrent && positionState === 'BETWEEN_STATIONS' && (
+                          <span className="rounded-md bg-rail-blue/10 border border-rail-blue/20 px-2 py-0.5 font-mono text-[9px] font-bold text-rail-blue uppercase tracking-wider">
+                            Passed
                           </span>
                         )}
 

@@ -5,6 +5,10 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   :root {
     /* Light theme (default) */
     --background: 210 40% 98%;
@@ -16,7 +20,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 6%;
 
-    --primary: 199 89% 48%;
+    --primary: 210 94% 46%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96%;
@@ -25,7 +29,7 @@
     --muted: 210 40% 96%;
     --muted-foreground: 215 20% 45%;
 
-    --accent: 199 89% 48%;
+    --accent: 210 94% 46%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 63% 55%;
@@ -33,9 +37,14 @@
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 199 89% 48%;
+    --ring: 210 94% 46%;
 
     --radius: 1rem;
+
+    /* Brand palette */
+    --rail-navy: #071a3d;
+    --rail-blue: #087fe5;
+    --rail-bright: #19a7f2;
 
     /* Theme surface tokens */
     --surface: 0 0% 100%;
@@ -122,11 +131,11 @@
     transition: background-color 0.25s ease, color 0.25s ease;
   }
   ::selection {
-    background: rgba(2, 132, 199, 0.3);
+    background: rgba(8, 127, 229, 0.3);
     color: #fff;
   }
   :focus-visible {
-    outline: 2px solid rgba(2, 132, 199, 0.6);
+    outline: 2px solid rgba(8, 127, 229, 0.6);
     outline-offset: 2px;
   }
 }
@@ -155,8 +164,8 @@
 }
 
 .glass-card:hover {
-  border-color: rgba(2, 132, 199, 0.15);
-  box-shadow: var(--glass-shadow-hover), var(--glass-inset), 0 0 0 1px rgba(2, 132, 199, 0.08);
+  border-color: rgba(8, 127, 229, 0.15);
+  box-shadow: var(--glass-shadow-hover), var(--glass-inset), 0 0 0 1px rgba(8, 127, 229, 0.08);
 }
 
 .glass-input {
@@ -168,13 +177,13 @@
 }
 
 .glass-input:focus-within {
-  border-color: rgba(2, 132, 199, 0.4);
-  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1), var(--glass-shadow);
+  border-color: rgba(8, 127, 229, 0.4);
+  box-shadow: 0 0 0 3px rgba(8, 127, 229, 0.1), var(--glass-shadow);
 }
 
 /* ─── Gradient text ──────────────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 40%, #06b6d4 100%);
+  background: linear-gradient(135deg, #19a7f2 0%, #087fe5 45%, #06b6d4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -189,11 +198,11 @@
 
 /* ─── Glow effects ───────────────────────────────────────────────── */
 .glow-blue {
-  box-shadow: 0 0 20px rgba(2, 132, 199, 0.3), 0 0 60px rgba(2, 132, 199, 0.1);
+  box-shadow: 0 0 20px rgba(8, 127, 229, 0.3), 0 0 60px rgba(8, 127, 229, 0.1);
 }
 
 .glow-blue-strong {
-  box-shadow: 0 0 20px rgba(2, 132, 199, 0.4), 0 0 60px rgba(2, 132, 199, 0.15), 0 0 100px rgba(2, 132, 199, 0.05);
+  box-shadow: 0 0 20px rgba(8, 127, 229, 0.4), 0 0 60px rgba(8, 127, 229, 0.15), 0 0 100px rgba(8, 127, 229, 0.05);
 }
 
 .glow-cyan {
@@ -210,7 +219,7 @@
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(2, 132, 199, 0.3), rgba(6, 182, 212, 0.1), transparent, rgba(2, 132, 199, 0.3));
+  background: linear-gradient(135deg, rgba(8, 127, 229, 0.3), rgba(6, 182, 212, 0.1), transparent, rgba(8, 127, 229, 0.3));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -277,6 +286,83 @@
   animation: fadeInUp 0.6s ease-out forwards;
 }
 
+/* ─── Live indicator gentle pulse ─────────────────────────────────── */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.82); }
+}
+
+.live-dot {
+  animation: live-pulse 2.2s ease-in-out infinite;
+}
+
+/* ─── Route line drawing on scroll ────────────────────────────────── */
+@keyframes route-dash {
+  to { stroke-dashoffset: -420; }
+}
+
+.route-draw-path {
+  stroke-dasharray: 6 9;
+  animation: route-dash 14s linear infinite;
+}
+
+@keyframes draw-line {
+  from { stroke-dashoffset: var(--route-len, 1000); }
+  to { stroke-dashoffset: 0; }
+}
+
+.draw-line {
+  stroke-dasharray: var(--route-len, 1000);
+  animation: draw-line 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ─── Train marker glide along route ──────────────────────────────── */
+@keyframes train-glide {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(58px, -20px); }
+  50% { transform: translate(116px, 6px); }
+  75% { transform: translate(178px, -44px); }
+  100% { transform: translate(248px, 6px); }
+}
+
+.train-glide {
+  animation: train-glide 16s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .train-glide,
+  .route-draw-path {
+    animation: none !important;
+  }
+}
+
+/* ─── Hero search ring ────────────────────────────────────────────── */
+@keyframes search-ring {
+  0% { box-shadow: 0 0 0 0 rgba(8, 127, 229, 0.18); }
+  70% { box-shadow: 0 0 0 14px rgba(8, 127, 229, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(8, 127, 229, 0); }
+}
+
+.search-focus-ring {
+  animation: search-ring 2.6s ease-out infinite;
+}
+
+/* ─── Thin editorial divider ──────────────────────────────────────── */
+.rule-navy {
+  border-top: 1px solid rgba(7, 26, 61, 0.1);
+}
+
+/* ─── Hero scene blend into page ──────────────────────────────────── */
+.scene-fade-left {
+  background: linear-gradient(90deg, #f7fafd 0%, transparent 26%);
+}
+.scene-fade-bottom {
+  background: linear-gradient(0deg, #fdfeff 0%, transparent 22%);
+}
+.scene-fade-top {
+  background: linear-gradient(180deg, #f3f8fe 0%, transparent 18%);
+}
+
 /* ─── Grid pattern background ────────────────────────────────────── */
 .grid-pattern {
   background-image: 
@@ -287,7 +373,7 @@
 
 /* ─── Radial gradient overlay ────────────────────────────────────── */
 .radial-glow {
-  background: radial-gradient(ellipse at center, rgba(2, 132, 199, 0.08) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(8, 127, 229, 0.08) 0%, transparent 70%);
 }
 
 /* ─── Custom scrollbar ───────────────────────────────────────────── */
@@ -314,11 +400,11 @@
   background: transparent;
 }
 .timeline-scroll::-webkit-scrollbar-thumb {
-  background: rgba(2, 132, 199, 0.25);
+  background: rgba(8, 127, 229, 0.25);
   border-radius: 9999px;
 }
 .timeline-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(2, 132, 199, 0.45);
+  background: rgba(8, 127, 229, 0.45);
 }
 .dark .timeline-scroll::-webkit-scrollbar-thumb {
   background: rgba(6, 182, 212, 0.3);
