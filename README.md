@@ -30,19 +30,6 @@ RailGaadi AI is a modern web application that provides real-time Indian train tr
 
 ---
 
-## 🎨 Screenshots
-
-| Landing Page | Train Details (Light) | Train Details (Dark) |
-|:---:|:---:|:---:|
-| ![Landing](docs/screenshots/landing-light.png) | ![Train Details Light](docs/screenshots/train-details-light.png) | ![Train Details Dark](docs/screenshots/train-details-dark.png) |
-
-| Live Map | Station Timeline | Mobile View |
-|:---:|:---:|:---:|
-| ![Live Map](docs/screenshots/live-map.png) | ![Timeline](docs/screenshots/station-timeline.png) | ![Mobile](docs/screenshots/mobile.png) |
-
-> 📸 Screenshots are placeholders. Replace with actual captures from the running application.
-
----
 
 ## 🧠 How It Works
 
